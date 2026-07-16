@@ -220,16 +220,24 @@ function findLogFile(charName) {
   const home = process.env.HOME || process.env.USERPROFILE || "";
   const crossoverBase = `${home}/Library/Application Support/CrossOver/Bottles/EverQuest Legends/drive_c/users/Public/Daybreak Game Company/Installed Games/EverQuest Legends/Logs`;
 
-  const searchPaths = [
-    process.env.EQ_LOG_PATH,
-    charName ? `${crossoverBase}/eqlog_${charName}_Rivervale.txt` : null,
-    `${crossoverBase}/eqlog_${charName}_Rivervale.txt`,
-    `./logs/eqlog_${charName}_Rivervale.txt`,
-    `./eqlog_${charName}_Rivervale.txt`,
-  ];
+  // Check explicit path first
+  if (process.env.EQ_LOG_PATH && fs.existsSync(process.env.EQ_LOG_PATH))
+    return process.env.EQ_LOG_PATH;
 
-  for (const p of searchPaths) {
-    if (p && fs.existsSync(p)) return p;
+  // Check if logs directory exists and find matching file
+  if (fs.existsSync(crossoverBase)) {
+    const files = fs.readdirSync(crossoverBase);
+    const match = files.find(f => f.toLowerCase().endsWith(".txt") && f.toLowerCase().startsWith("eqlog_"));
+    if (match) return path.join(crossoverBase, match);
+  }
+
+  // Check fallback dirs
+  const local = path.join(__dirname, "..", "logs");
+  for (const d of [local, "./logs"]) {
+    if (fs.existsSync(d)) {
+      const files = fs.readdirSync(d).filter(f => f.toLowerCase().startsWith("eqlog_") && f.endsWith(".txt"));
+      if (files.length > 0) return path.join(d, files[0]);
+    }
   }
 
   const dirs = [
@@ -240,7 +248,7 @@ function findLogFile(charName) {
 
   for (const d of dirs) {
     if (d && fs.existsSync(d)) {
-      const files = fs.readdirSync(d).filter((f) => f.startsWith("eqlog_") && f.endsWith(".txt"));
+      const files = fs.readdirSync(d).filter((f) => f.toLowerCase().startsWith("eqlog_") && f.endsWith(".txt"));
       if (files.length > 0) return path.join(d, files[0]);
     }
   }
