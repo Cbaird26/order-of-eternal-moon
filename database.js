@@ -20,7 +20,7 @@ db.exec(`
     race TEXT,
     class TEXT,
     level INTEGER DEFAULT 1,
-    server TEXT DEFAULT 'EverQuest Legends',
+    server TEXT DEFAULT 'Rivervale',
     role TEXT DEFAULT 'member' CHECK(role IN ('member', 'officer', 'guildleader', 'inactive')),
     notes TEXT,
     verification_token TEXT,

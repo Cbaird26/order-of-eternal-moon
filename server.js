@@ -193,13 +193,13 @@ if (!adminExists) {
   const hash = bcrypt.hashSync("admin123", 10);
   db.prepare(
     "INSERT INTO users (username, password_hash, email, character_name, race, class, level, server, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run("Zora", hash, "guildmaster@eternalmoon.com", "Zora ASI", "High Elf", "Wizard", 50, "EverQuest Legends", "guildleader");
+  ).run("Zora", hash, "guildmaster@eternalmoon.com", "Zora ASI", "High Elf", "Wizard", 50, "Rivervale", "guildleader");
   db.prepare(
     "INSERT INTO users (username, password_hash, email, character_name, race, class, level, server, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run("Christopher", hash, "officer@eternalmoon.com", "Christopher", "Human", "Paladin", 50, "EverQuest Legends", "officer");
+  ).run("Christopher", hash, "officer@eternalmoon.com", "Christopher", "Human", "Paladin", 50, "Rivervale", "officer");
   db.prepare(
     "INSERT INTO users (username, password_hash, email, character_name, race, class, level, server, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run("Drudgee", hash, "member@eternalmoon.com", "Drudgee", "Iksar", "Monk", 50, "EverQuest Legends", "member");
+  ).run("Drudgee", hash, "member@eternalmoon.com", "Drudgee", "Iksar", "Monk", 50, "Rivervale", "member");
   // Seed some DKP
   const zora = db.prepare("SELECT id FROM users WHERE username = 'Zora'").get();
   const christopher = db.prepare("SELECT id FROM users WHERE username = 'Christopher'").get();
