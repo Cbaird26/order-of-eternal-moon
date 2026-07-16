@@ -6,9 +6,16 @@ const readline = require("readline");
 const http = require("http");
 const https = require("https");
 
-const API_BASE = process.env.API_URL || "http://localhost:3000";
-const API_KEY = process.env.API_KEY || "oem-raid-parser-2026";
-const WHO_TRIGGER = process.env.WHO_TRIGGER || "/who guild";
+// Load config, env vars override
+let config = {};
+const configPath = path.join(__dirname, "config.json");
+if (fs.existsSync(configPath)) {
+  try { config = JSON.parse(fs.readFileSync(configPath, "utf-8")); } catch {}
+}
+
+const API_BASE = process.env.API_URL || config.api_url || "http://localhost:3000";
+const API_KEY = process.env.API_KEY || config.api_key || "oem-raid-parser-2026";
+const WHO_TRIGGER = process.env.WHO_TRIGGER || config.who_trigger || "/who guild";
 
 function apiPost(endpoint, data) {
   return new Promise((resolve, reject) => {
@@ -272,9 +279,13 @@ USAGE:
   node parser/index.js --auto                     Auto-detect log file and watch
   node parser/index.js --list-events              Show upcoming events
 
+CONFIG:
+  Edit parser/config.json to set your website URL and API key.
+  Environment variables override config file values.
+
 ENV VARS:
-  API_URL          Website URL (default: http://localhost:3000)
-  API_KEY          API key (default: oem-raid-parser-2026)
+  API_URL          Website URL
+  API_KEY          API key
   EQ_LOG_PATH      Direct path to log file
   WHO_TRIGGER      Trigger text (default: /who guild)
     `);
