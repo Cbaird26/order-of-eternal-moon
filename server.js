@@ -40,6 +40,58 @@ function requireOfficer(req, res, next) {
   next();
 }
 
+// Simple API key for the parser tool
+const API_KEY = process.env.API_KEY || "oem-raid-parser-2026";
+
+// --- API ENDPOINTS (for the log parser tool) ---
+
+app.post("/api/attendance", (req, res) => {
+  if (req.headers["x-api-key"] !== API_KEY) return res.status(401).json({ error: "Invalid API key" });
+
+  const { event_id, attendees } = req.body;
+  // attendees = [{ character_name }, ...]
+
+  if (!event_id || !attendees || !Array.isArray(attendees)) {
+    return res.status(400).json({ error: "Missing event_id or attendees array" });
+  }
+
+  const event = db.prepare("SELECT * FROM events WHERE id = ?").get(event_id);
+  if (!event) return res.status(404).json({ error: "Event not found" });
+
+  let checked = 0;
+  let notFound = [];
+
+  const insertAttendance = db.prepare("INSERT OR IGNORE INTO event_attendance (event_id, user_id, checked_in, notes) VALUES (?, ?, 1, 'Auto-check-in (log parser)')");
+  const insertDkp = db.prepare("INSERT OR IGNORE INTO dkp (user_id, points, reason, awarded_by) VALUES (?, ?, ?, NULL)");
+
+  for (const a of attendees) {
+    const user = db.prepare("SELECT id FROM users WHERE character_name = ?").get(a.character_name);
+    if (user) {
+      insertAttendance.run(event_id, user.id);
+      insertDkp.run(user.id, 5, `Raid attendance: ${event.title}`);
+      checked++;
+    } else {
+      notFound.push(a.character_name);
+    }
+  }
+
+  res.json({ checked, notFound, message: `Checked in ${checked} members for ${event.title}` });
+});
+
+app.get("/api/events/upcoming", (req, res) => {
+  const events = db.prepare(`
+    SELECT id, title, description, location, event_date, max_attendees
+    FROM events WHERE event_date >= datetime('now')
+    ORDER BY event_date ASC LIMIT 10
+  `).all();
+  res.json(events);
+});
+
+app.get("/api/members", (req, res) => {
+  const members = db.prepare("SELECT character_name, class, race FROM users WHERE role != 'inactive'").all();
+  res.json(members);
+});
+
 // --- ROUTES ---
 
 app.get("/", (req, res) => {
@@ -224,5 +276,7 @@ if (!adminExists) {
 
 app.listen(PORT, () => {
   console.log(`\n🌙 Order of the Eternal Moon — EverQuest Legends Guild`);
-  console.log(`   Running on http://localhost:${PORT}\n`);
+  console.log(`   Website: http://localhost:${PORT}`);
+  console.log(`   API Key: ${API_KEY}`);
+  console.log(`   Parser:  node parser/index.js --auto\n`);
 });
