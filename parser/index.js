@@ -210,10 +210,13 @@ async function listEvents() {
 }
 
 function findLogFile(charName) {
+  const home = process.env.HOME || process.env.USERPROFILE || "";
+  const crossoverBase = `${home}/Library/Application Support/CrossOver/Bottles/EverQuest Legends/drive_c/users/Public/Daybreak Game Company/Installed Games/EverQuest Legends/Logs`;
+
   const searchPaths = [
     process.env.EQ_LOG_PATH,
-    `C:/Users/${process.env.USERNAME || "Public"}/AppData/Local/VirtualStore/Program Files (x86)/EverQuest Legends/Logs/eqlog_${charName}_Rivervale.txt`,
-    `C:/Program Files (x86)/EverQuest Legends/Logs/eqlog_${charName}_Rivervale.txt`,
+    charName ? `${crossoverBase}/eqlog_${charName}_Rivervale.txt` : null,
+    `${crossoverBase}/eqlog_${charName}_Rivervale.txt`,
     `./logs/eqlog_${charName}_Rivervale.txt`,
     `./eqlog_${charName}_Rivervale.txt`,
   ];
@@ -222,11 +225,9 @@ function findLogFile(charName) {
     if (p && fs.existsSync(p)) return p;
   }
 
-  // Try to find any eqlog file
   const dirs = [
     process.env.EQ_LOG_PATH && path.dirname(process.env.EQ_LOG_PATH),
-    `C:/Users/${process.env.USERNAME || "Public"}/AppData/Local/VirtualStore/Program Files (x86)/EverQuest Legends/Logs`,
-    `C:/Program Files (x86)/EverQuest Legends/Logs`,
+    crossoverBase,
     "./logs",
   ];
 
@@ -235,6 +236,15 @@ function findLogFile(charName) {
       const files = fs.readdirSync(d).filter((f) => f.startsWith("eqlog_") && f.endsWith(".txt"));
       if (files.length > 0) return path.join(d, files[0]);
     }
+  }
+
+  // CrossOver bottle drive root
+  const searchRoot = `${home}/Library/Application Support/CrossOver/Bottles/EverQuest Legends/drive_c`;
+  if (fs.existsSync(searchRoot)) {
+    const result = require("child_process").execSync(
+      `find '${searchRoot}' -name 'eqlog_*.txt' -type f 2>/dev/null | head -1`
+    ).toString().trim();
+    if (result) return result;
   }
 
   return null;
