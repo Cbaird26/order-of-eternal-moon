@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <h1>Order of the Eternal Moon</h1>
+  <p class="subtitle">A legendary guild reborn on the Tunare server of EverQuest Legends. Veterans of Velious, united once more under the silver light. We raid, we conquer, we endure.</p>
+  <div class="cta-buttons">
+    <% if (!user) { %>
+      <a href="/register" class="btn btn-primary">✧ Join the Order</a>
+      <a href="/guild-lore" class="btn btn-secondary">📜 Read Our History</a>
+    <% } else { %>
+      <a href="/dashboard" class="btn btn-primary">✦ Enter the Sanctum</a>
+      <a href="/events" class="btn btn-secondary">📅 View Events</a>
+    <% } %>
+    <a href="https://everquestlegends.com" target="_blank" class="btn btn-secondary">⚔️ EverQuest Legends</a>
+  </div>
+</section>
+
+<div class="container">
+  <% if (topDkp && topDkp.length > 0) { %>
+  <div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">
+      <h2>⚔️ DKP Leaderboard</h2>
+      <a href="/dkp" class="btn btn-secondary btn-sm">Full Rankings</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Character</th><th>Class</th><th>DKP</th></tr></thead>
+        <tbody>
+          <% topDkp.forEach((m, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><strong><%= m.character_name %></strong></td>
+            <td><%= m.class || '—' %></td>
+            <td style="color:var(--gold);font-weight:700;"><%= Math.round(m.total) %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="grid-3">
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">🌙</div>
+      <h3 style="color:var(--accent);margin-bottom:0.5rem;">Our Legacy</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;">Founded on Tunare during the Velious era. Order of the Eternal Moon stood among the greats — raiding the frozen wastes of Kael Drakkal, the depths of Temple of Veeshan, and the halls of NToV.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">⚔️</div>
+      <h3 style="color:var(--accent);margin-bottom:0.5rem;">Raid Ready</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;">Our DKP system ensures fair loot distribution. Earn points by attending raids, checking into events, and contributing to the Order. Every member's effort is recognized.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">🤝</div>
+      <h3 style="color:var(--accent);margin-bottom:0.5rem;">Community</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;">Whether you're a returning veteran from 1999 or a new adventurer in EverQuest Legends, you'll find a home here. The Moon welcomes all who seek fellowship and adventure.</p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

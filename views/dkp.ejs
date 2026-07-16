@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="page-header">
+    <h1>💰 <span>DKP</span> — Dragon Kill Points</h1>
+    <div class="card" style="padding:0.8rem 1.5rem;">
+      <span style="color:var(--text-muted);">Your Balance: </span>
+      <span style="font-size:1.5rem;font-weight:800;color:var(--gold);"><%= Math.round(dkpTotal) %></span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:2rem;">
+    <div class="card">
+      <div class="card-header"><h2>🏆 DKP Leaderboard</h2></div>
+      <% if (leaderboard && leaderboard.length > 0) { %>
+        <% leaderboard.forEach((m, i) => { %>
+        <div class="lb-row">
+          <div class="rank"><%= i + 1 %></div>
+          <div class="lb-info">
+            <div class="lb-name"><%= m.character_name %></div>
+            <div class="lb-class"><%= m.race || '' %> <%= m.class || '' %> · Level <%= m.level || '—' %></div>
+          </div>
+          <div class="lb-points"><%= Math.round(m.total) %></div>
+        </div>
+        <% }) %>
+      <% } else { %>
+        <p style="color:var(--text-muted);text-align:center;padding:2rem 0;">No DKP data yet.</p>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>📊 Your DKP History</h2></div>
+      <% if (allDkp && allDkp.length > 0) { %>
+        <% allDkp.forEach(d => { %>
+        <div class="dkp-entry">
+          <div>
+            <div><%= d.reason %></div>
+            <div style="font-size:0.75rem;color:var(--text-muted);"><%= new Date(d.created_at).toLocaleString() %></div>
+          </div>
+          <span class="dkp-points dkp-positive">+<%= Math.round(d.points) %></span>
+        </div>
+        <% }) %>
+      <% } else { %>
+        <p style="color:var(--text-muted);text-align:center;padding:2rem 0;">No DKP earned yet. Attend events to earn points!</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:800px;margin:0 auto;">
+    <div class="card-header"><h2>📋 DKP Rules</h2></div>
+    <ul style="color:var(--text-secondary);list-style:none;padding:0;">
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">✦ <strong>+5 DKP</strong> per raid attendance</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">✦ <strong>+10 DKP</strong> for boss kills</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">✦ <strong>+2 DKP</strong> for on-time check-in bonus</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">✦ Loot is distributed via DKP auction (highest bidder)</li>
+      <li style="padding:8px 0;">✦ DKP never decays — your dedication is permanent</li>
+    </ul>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,136 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="page-header">
+    <h1>⚙️ <span>Admin</span> Panel</h1>
+    <span style="color:var(--text-muted);">Guild Officer Access</span>
+  </div>
+
+  <div style="margin-bottom:2rem;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-secondary btn-sm" onclick="showTab('members')">Members</button>
+      <button class="btn btn-secondary btn-sm" onclick="showTab('dkp')">Award DKP</button>
+      <button class="btn btn-secondary btn-sm" onclick="showTab('events-admin')">Events</button>
+    </div>
+  </div>
+
+  <!-- Members Tab -->
+  <div id="tab-members" class="card tab-content" style="margin-bottom:1.5rem;">
+    <div class="card-header"><h2>👥 Guild Roster</h2><span style="color:var(--text-muted);font-size:0.9rem;"><%= members.length %> members</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Character</th><th>Race</th><th>Class</th><th>Level</th><th>Role</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% members.forEach(m => { %>
+          <tr>
+            <td><strong><%= m.character_name %></strong><br><span style="font-size:0.8rem;color:var(--text-muted);"><%= m.username %></span></td>
+            <td><%= m.race || '—' %></td>
+            <td><%= m.class || '—' %></td>
+            <td><%= m.level || '—' %></td>
+            <td><span class="badge badge-<%= m.role %>"><%= m.role %></span></td>
+            <td>
+              <form method="POST" action="/admin/member/update" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <input type="hidden" name="user_id" value="<%= m.id %>">
+                <select name="role" style="padding:4px 8px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;">
+                  <option value="member" <%= m.role === 'member' ? 'selected' : '' %>>Member</option>
+                  <option value="officer" <%= m.role === 'officer' ? 'selected' : '' %>>Officer</option>
+                  <option value="guildleader" <%= m.role === 'guildleader' ? 'selected' : '' %>>Guild Leader</option>
+                  <option value="inactive" <%= m.role === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                </select>
+                <input type="number" name="level" value="<%= m.level || '' %>" placeholder="Lvl" style="width:60px;padding:4px 8px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;">
+                <button class="btn btn-secondary btn-sm">Update</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DKP Tab -->
+  <div id="tab-dkp" class="card tab-content" style="display:none;margin-bottom:1.5rem;">
+    <div class="card-header"><h2>💰 Award DKP</h2></div>
+    <form method="POST" action="/admin/dkp/award" style="max-width:500px;">
+      <div class="form-group">
+        <label for="user_id">Member</label>
+        <select id="user_id" name="user_id" required>
+          <option value="">Select member...</option>
+          <% members.filter(m => m.role !== 'inactive').forEach(m => { %>
+          <option value="<%= m.id %>"><%= m.character_name %> (<%= m.class || '?' %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="points">DKP Points</label>
+        <input type="number" id="points" name="points" step="0.5" required placeholder="e.g., 10, 5, 2.5">
+      </div>
+      <div class="form-group">
+        <label for="reason">Reason</label>
+        <input type="text" id="reason" name="reason" required placeholder="e.g., Vox Kill, Raid Attendance, On-Time Bonus">
+      </div>
+      <button type="submit" class="btn btn-gold">Award DKP</button>
+    </form>
+
+    <div style="margin-top:2rem;">
+      <h3 style="color:var(--accent);margin-bottom:1rem;">Recent DKP Activity</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Member</th><th>Points</th><th>Reason</th><th>Awarded By</th><th>Date</th></tr></thead>
+          <tbody>
+            <% if (allDkp && allDkp.length > 0) { %>
+              <% allDkp.forEach(d => { %>
+              <tr>
+                <td><%= d.character_name %></td>
+                <td style="color:var(--gold);font-weight:700;">+<%= Math.round(d.points) %></td>
+                <td><%= d.reason %></td>
+                <td style="color:var(--text-muted);"><%= d.awarded_by_name || 'System' %></td>
+                <td style="color:var(--text-muted);font-size:0.85rem;"><%= new Date(d.created_at).toLocaleString() %></td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No DKP activity yet.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events Admin Tab -->
+  <div id="tab-events-admin" class="card tab-content" style="display:none;">
+    <div class="card-header"><h2>📅 Manage Events</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Date</th><th>Location</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (events && events.length > 0) { %>
+            <% events.forEach(e => { %>
+            <tr>
+              <td><strong><%= e.title %></strong></td>
+              <td><%= new Date(e.event_date).toLocaleDateString() %></td>
+              <td><%= e.location || '—' %></td>
+              <td>
+                <form method="POST" action="/admin/events/delete/<%= e.id %>" onsubmit="return confirm('Delete this event?')" style="display:inline;">
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No events.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + tab).style.display = 'block';
+}
+</script>
+
+<%- include('partials/footer') %>

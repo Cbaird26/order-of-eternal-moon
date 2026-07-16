@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order of the Eternal Moon | EverQuest Legends Guild</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <span class="moon-icon">🌙</span>
+      <div>
+        Order of the Eternal Moon
+        <span class="subtitle">EVERQUEST LEGENDS · TUNARE SERVER</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="<%= path === '/' ? 'active' : '' %>">Home</a>
+      <a href="/guild-lore" class="<%= path === '/guild-lore' ? 'active' : '' %>">Guild Lore</a>
+      <% if (user) { %>
+        <a href="/dashboard" class="<%= path === '/dashboard' ? 'active' : '' %>">Dashboard</a>
+        <a href="/dkp" class="<%= path === '/dkp' ? 'active' : '' %>">DKP</a>
+        <a href="/events" class="<%= path === '/events' ? 'active' : '' %>">Events</a>
+        <% if (user.role === 'officer' || user.role === 'guildleader') { %>
+          <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>">Admin</a>
+        <% } %>
+        <div class="user-badge">
+          <span><%= user.character_name %></span>
+          <% if (user.role !== 'member') { %>
+            <span class="role-tag"><%= user.role %></span>
+          <% } %>
+        </div>
+        <a href="/logout" class="btn btn-secondary btn-sm">Logout</a>
+      <% } else { %>
+        <a href="/login" class="<%= path === '/login' ? 'active' : '' %>">Login</a>
+        <a href="/register" class="btn btn-glow btn-sm">Join the Moon</a>
+      <% } %>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="page-header">
+    <h1>📅 <span>Events</span> & Raids</h1>
+    <% if (user && (user.role === 'officer' || user.role === 'guildleader')) { %>
+      <button class="btn btn-primary" onclick="document.getElementById('createModal').classList.add('active')">+ Create Event</button>
+    <% } %>
+  </div>
+
+  <% if (typeof query !== 'undefined' && query.checkedin) { %><div class="alert alert-success">Successfully checked in! +5 DKP awarded.</div><% } %>
+  <% if (typeof query !== 'undefined' && query.already === 'checkedin') { %><div class="alert alert-info">You're already checked in to this event.</div><% } %>
+
+  <% if (events && events.length > 0) { %>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Attendees</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% events.forEach(e => { %>
+          <tr>
+            <td><strong><%= e.title %></strong><br><span style="font-size:0.8rem;color:var(--text-muted);"><%= e.description || '' %></span></td>
+            <td><%= e.location || 'TBD' %></td>
+            <td><%= new Date(e.event_date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></td>
+            <td><%= e.attendee_count %><% if (e.max_attendees) { %>/<%= e.max_attendees %><% } %></td>
+            <td>
+              <form method="POST" action="/events/checkin/<%= e.id %>" style="display:inline;">
+                <button class="btn btn-success btn-sm">✓ Check In</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="card" style="text-align:center;padding:3rem;">
+      <p style="font-size:1.2rem;color:var(--text-muted);">No events scheduled yet.</p>
+      <% if (user && (user.role === 'officer' || user.role === 'guildleader')) { %>
+        <p style="color:var(--text-muted);margin-top:0.5rem;">Create the first event to rally the Order!</p>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal">
+    <h2>📅 Create Event</h2>
+    <form method="POST" action="/events/create">
+      <div class="form-group">
+        <label for="title">Event Title</label>
+        <input type="text" id="title" name="title" required placeholder="e.g., Plane of Fear Raid">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Raid details, requirements, etc."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" placeholder="e.g., Plane of Fear">
+        </div>
+        <div class="form-group">
+          <label for="max_attendees">Max Attendees</label>
+          <input type="number" id="max_attendees" name="max_attendees" placeholder="8">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="event_date">Date & Time</label>
+        <input type="datetime-local" id="event_date" name="event_date" required>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:1rem;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">Create Event</button>
+        <button type="button" class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="document.getElementById('createModal').classList.remove('active')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('createModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('active');
+});
+</script>
+
+<%- include('partials/footer') %>

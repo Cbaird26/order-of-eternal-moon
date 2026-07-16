@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-box">
+    <h1>🌙 Enter the Sanctum</h1>
+    <p class="auth-subtitle">The moon awaits your return</p>
+    <% if (typeof registered !== 'undefined' && registered) { %><div class="alert alert-success">Registration successful! Welcome to the Order.</div><% } %>
+    <% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">✦ Enter</button>
+    </form>
+    <div class="auth-footer">
+      Not yet sworn? <a href="/register">Join the Order</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

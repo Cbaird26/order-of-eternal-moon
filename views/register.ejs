@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-box">
+    <h1>🌙 Join the Order</h1>
+    <p class="auth-subtitle">Forge your oath under the eternal moon</p>
+    <% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <form method="POST" action="/register">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="character_name">Character Name</label>
+          <input type="text" id="character_name" name="character_name" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="race">Race</label>
+          <select id="race" name="race">
+            <option value="">Select Race</option>
+            <option>Barbarian</option><option>Dark Elf</option><option>Dwarf</option><option>Erudite</option>
+            <option>Froglok</option><option>Gnome</option><option>Half Elf</option><option>Halfling</option>
+            <option>High Elf</option><option>Human</option><option>Iksar</option><option>Kerran</option>
+            <option>Ogre</option><option>Troll</option><option>Wood Elf</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="class">Class</label>
+          <select id="class" name="class">
+            <option value="">Select Class</option>
+            <option>Bard</option><option>Beastlord</option><option>Berserker</option><option>Cleric</option>
+            <option>Druid</option><option>Enchanter</option><option>Magician</option><option>Monk</option>
+            <option>Necromancer</option><option>Paladin</option><option>Ranger</option><option>Rogue</option>
+            <option>Shadow Knight</option><option>Shaman</option><option>Warrior</option><option>Wizard</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="server">Server</label>
+        <select id="server" name="server">
+          <option value="EverQuest Legends" selected>EverQuest Legends</option>
+          <option value="Project 1999">Project 1999</option>
+          <option value="Live">Live (Tunare)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:0.5rem;">✧ Swear the Oath</button>
+    </form>
+    <div class="auth-footer">
+      Already a member? <a href="/login">Enter the Sanctum</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
