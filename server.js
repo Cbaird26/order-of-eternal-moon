@@ -233,6 +233,13 @@ app.post("/admin/member/update", requireAuth, requireOfficer, (req, res) => {
   res.redirect("/admin");
 });
 
+app.post("/admin/member/delete/:id", requireAuth, requireOfficer, (req, res) => {
+  db.prepare("DELETE FROM event_attendance WHERE user_id = ?").run(req.params.id);
+  db.prepare("DELETE FROM dkp WHERE user_id = ?").run(req.params.id);
+  db.prepare("DELETE FROM users WHERE id = ?").run(req.params.id);
+  res.redirect("/admin");
+});
+
 app.post("/admin/events/delete/:id", requireAuth, requireOfficer, (req, res) => {
   db.prepare("DELETE FROM event_attendance WHERE event_id = ?").run(req.params.id);
   db.prepare("DELETE FROM events WHERE id = ?").run(req.params.id);
